@@ -1,7 +1,6 @@
 package user
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/flexGURU/goAPI/types"
@@ -35,12 +34,14 @@ func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request)  {
 var userRegisterPayload types.RegisterUserPayload
 
 if err := utils.ParseJSON(r, &userRegisterPayload); err != nil {
-	log.Fatal("promlem unmarshalling json",err)
+	utils.WriteError(w, http.StatusBadGateway, err)
 }
- err := utils.WriteJSON(w, userRegisterPayload) 
- if err != nil {
-	log.Fatal(err)
- }
+
+err := utils.WriteJSON(w, http.StatusAccepted, userRegisterPayload)
+if err != nil {
+	utils.WriteError(w, http.StatusBadRequest, err)
+}
+ 
 
 
 // check if User exits
