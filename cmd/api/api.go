@@ -27,7 +27,9 @@ func (server *APIServer) Run() error {
 	router := mux.NewRouter()
 	subrouter := router.PathPrefix("/api/v1").Subrouter()
 	log.Println("listening on Address", server.addr)
-	userHandler := user.NewHandler()
+
+	userStore := user.NewStore(server.db)
+	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoute(subrouter)
 
 	return http.ListenAndServe(server.addr, router)

@@ -8,11 +8,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Handler struct {
+type Handler struct { 
+	store types.UserStore
+	
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(store types.UserStore) *Handler {
+	return &Handler{store: store}
 
 }
 
