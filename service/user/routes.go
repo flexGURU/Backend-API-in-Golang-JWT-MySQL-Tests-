@@ -1,12 +1,15 @@
 package user
 
 import (
+	"fmt"
 	"net/http"
 
+	"github.com/flexGURU/goAPI/auth"
 	"github.com/flexGURU/goAPI/types"
 	"github.com/flexGURU/goAPI/utils"
 	"github.com/gorilla/mux"
 )
+
 
 type Handler struct { 
 	store types.UserStore
@@ -25,29 +28,41 @@ func (h *Handler) RegisterRoute(router *mux.Router) {
 
 }
 
-func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {
+func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {}
 
-	
-}
+func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
+    // Parse JSON payload
+    var userRegisterPayload types.RegisterUserPayload
+    if err := utils.ParseJSON(r, &userRegisterPayload); err != nil {
+        utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("jameni %s", err))
+        return
+    }
 
-func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request)  {
+    // Check if user exists
+    user, err := h.store.GetUserByEmail(userRegisterPayload.Email)
+    if err == nil && user != nil {
+        utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with this email %s exists", user.Email))
+        return
+    }
 
-// get JSON Payload
-var userRegisterPayload types.RegisterUserPayload
+    // Hash password
+    hashedPwd, err := auth.HashPassword(userRegisterPayload.Password)
+    if err != nil {
+        utils.WriteError(w, http.StatusBadRequest, err)
+        return
+    }
 
-if err := utils.ParseJSON(r, &userRegisterPayload); err != nil {
-	utils.WriteError(w, http.StatusBadGateway, err)
-}
+    // Create new user
+    err = h.store.CreateUser(types.User{
+        FirstName: userRegisterPayload.FirstName,
+        LastName:  userRegisterPayload.LastName,
+        Email:     userRegisterPayload.Email,
+        Password:  hashedPwd,
+    })
+    if err != nil {
+        utils.WriteError(w, http.StatusBadGateway, err)
+        return
+    }
 
-err := utils.WriteJSON(w, http.StatusAccepted, userRegisterPayload)
-if err != nil {
-	utils.WriteError(w, http.StatusBadRequest, err)
-}
- 
-
-
-// check if User exits
-	// if user doesn't create a new user
-
-	
+    utils.WriteJSON(w, http.StatusCreated, nil)
 }

@@ -1,17 +1,20 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
-	"github.com/flexGURU/goAPI/types"
+	"github.com/flexGURU/goAPI/cmd/api"
 )
 
 func main() {
 
-	user := new(types.User)
 
-	user.Email = "mukuna"
+	server := api.NewAPIServer(":8080", nil )
 
-	fmt.Println(user)
+	if err := server.Run(); err != nil {
+		log.Fatal("problem",err)
+	}
+
+
 
 }
