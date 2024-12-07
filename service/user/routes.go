@@ -47,10 +47,11 @@ func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+
     // Check if user exists
     user, err := h.store.GetUserByEmail(userRegisterPayload.Email)
     if err == nil  {
-        utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with this email %s exists", user.Email))
+        utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("user with email: %v already exits", user.Email))
         return
     }
 

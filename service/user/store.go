@@ -17,28 +17,21 @@ func NewStore(db *sql.DB) *Store {
 }
 
 func (s *Store) GetUserByEmail(email string) (*types.User, error) {
+    var user types.User
+    err := s.db.QueryRow("SELECT firstname, lastname, email  FROM users WHERE email = $1", email).
+        Scan(&user.FirstName, &user.LastName, &user.Email)
+    
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, fmt.Errorf("user not found")
+        }
+        return nil, fmt.Errorf("error fetching user: %v", err)
+    }
 
-	rows, err := s.db.Query("SELECT * FROM users WHERE email = ? ", email)
-	if err != nil {
-		return nil, err
-	}
-
-	u := new(types.User)
-
-	for rows.Next() {
-		u, err = ScanRows(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if u.ID == 0 {
-		return nil, fmt.Errorf("user not found")
-	}
-
-	return u, nil
-	
+    return &user, nil
 }
+
+
 
 func (s *Store) CreateUser(user types.User) error {
 	_, err := s.db.Exec("INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4)",
