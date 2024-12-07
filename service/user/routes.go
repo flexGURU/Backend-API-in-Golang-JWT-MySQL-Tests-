@@ -61,6 +61,7 @@ func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+
     // Create new user
     err = h.store.CreateUser(types.User{
         FirstName: userRegisterPayload.FirstName,
@@ -69,7 +70,7 @@ func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
         Password:  hashedPwd,
     })
     if err != nil {
-        utils.WriteError(w, http.StatusBadGateway, err)
+        utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("problem creating user %v ", err))
         return
     }
 

@@ -24,6 +24,6 @@ type RegisterUserPayload struct {
 
 type UserStore interface {
 	GetUserByEmail(email string) (*User, error)
-	CreateUser(User) (error)
+	CreateUser(user User) (error)
 
 }

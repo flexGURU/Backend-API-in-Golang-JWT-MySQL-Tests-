@@ -40,10 +40,20 @@ func (s *Store) GetUserByEmail(email string) (*types.User, error) {
 	
 }
 
-func (s *Store) CreateUser(types.User) ( error) {
+func (s *Store) CreateUser(user types.User) error {
+	_, err := s.db.Exec("INSERT INTO users (firstname, lastname, email, password) VALUES ($1, $2, $3, $4)",
+		user.FirstName,
+		user.LastName,
+		user.Email,
+		user.Password)
 
-	return nil	
+	if err != nil {
+		return fmt.Errorf("error creating user: %v", err)
+	}
+
+	return nil
 }
+
 
 func ScanRows(rows *sql.Rows) (*types.User, error) {
 	user := new(types.User)
