@@ -25,7 +25,7 @@ func initiateConfig() Config{
 		Port: getEnv("PORT", "5432"),
 		DBUser: getEnv("DB_USER", "root"),
 		DBPassword: getEnv("DB_PASSWORD", "secret"),
-		DBAdrress: fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "3306") ),
+		DBAdrress: fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "5432") ),
 		DBName: getEnv("DB_NAME", "demogo"),
 	
 	}

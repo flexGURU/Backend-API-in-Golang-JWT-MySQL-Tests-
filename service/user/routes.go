@@ -7,6 +7,7 @@ import (
 	"github.com/flexGURU/goAPI/auth"
 	"github.com/flexGURU/goAPI/types"
 	"github.com/flexGURU/goAPI/utils"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 )
 
@@ -30,17 +31,25 @@ func (h *Handler) RegisterRoute(router *mux.Router) {
 
 func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {}
 
+
 func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
     // Parse JSON payload
     var userRegisterPayload types.RegisterUserPayload
     if err := utils.ParseJSON(r, &userRegisterPayload); err != nil {
-        utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("jameni %s", err))
+        utils.WriteError(w, http.StatusBadRequest, err)
+        return
+    }
+
+    // Validate the payload
+    if err := utils.Validate.Struct(userRegisterPayload); err != nil {
+        errors := err.(validator.ValidationErrors)
+        utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload &%s", errors))
         return
     }
 
     // Check if user exists
     user, err := h.store.GetUserByEmail(userRegisterPayload.Email)
-    if err == nil && user != nil {
+    if err == nil  {
         utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("user with this email %s exists", user.Email))
         return
     }
@@ -66,3 +75,4 @@ func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
 
     utils.WriteJSON(w, http.StatusCreated, nil)
 }
+
