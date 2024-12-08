@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/flexGURU/goAPI/auth"
+	"github.com/flexGURU/goAPI/config"
 	"github.com/flexGURU/goAPI/types"
 	"github.com/flexGURU/goAPI/utils"
 	"github.com/go-playground/validator/v10"
@@ -47,16 +48,23 @@ func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {
         user, err := h.store.GetUserByEmail(userloginPayload.Email)
         if err != nil {
             utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("user not found" ))
-
             return
         }
 
-        if !auth.ComparePassword([]byte(user.Password), []byte(userloginPayload.Password)) {
+        if !auth.ComparePassword(user.Password, []byte(userloginPayload.Password)) {
             utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("email or password in incorrect"))
             return
         }
 
-        utils.WriteJSON(w,http.StatusOK, map[string]string{ "token" : "" } )
+        tokenJWT := []byte(config.Envs.JWTSecret)
+
+        tokenStr , err := auth.CreateJWT(tokenJWT, user.ID)
+        if err != nil {
+            utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("problem generating token %v", err))
+            return
+        }
+
+        utils.WriteJSON(w,http.StatusOK, map[string]string{ "token" : tokenStr } )
 
 }
 

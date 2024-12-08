@@ -15,6 +15,8 @@ type Config struct {
 	DBPassword string
 	DBAdrress string
 	DBName string
+	JWTDuration int64	 
+	JWTSecret string
 }
 
 var Envs = initiateConfig()
@@ -29,6 +31,7 @@ func initiateConfig() Config{
 		DBAdrress: fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "5432") ),
 		DBName: getEnv("DB_NAME", "demogo"),
 		JWTDuration: getEnvInt("JWTDuration", 3600*24*7),
+		JWTSecret: getEnv("JWTSecret", "NOSECRET"),
 	
 	}
 }
@@ -47,16 +50,16 @@ func getEnv(key, fallback string) string  {
 func getEnvInt(key string, fallback int64) int64 {
 	 
 	if value, ok := os.LookupEnv(key); ok {
-		i, err := strconv.ParseInt(s string, base int, bitSize int)
-			return fallback
+		i, err := strconv.ParseInt(value, 10, 64)
+			if err != nil {
+				return fallback
+			}
+			return i
 		}
 
-		return i
+		return fallback
 	}
 
-	return fallback
-
-
-}
+	
 
 

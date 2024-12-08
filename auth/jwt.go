@@ -9,18 +9,23 @@ import (
 )
 
 
-func CreateJWT(secret []byte, userID int64) (string, error) {
+func CreateJWT(secret []byte, userID int) (string, error) {
 
-	expiryDuration := time.Second * time.Duration(
-		config.
-	)
+	expiryDuration := time.Second * time.Duration(config.Envs.JWTDuration)
 
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
 			"userID" : strconv.Itoa(userID),
-			"expiredAt" : 
-		}
+			"expiredAt" : time.Now().Add(expiryDuration).Unix(),
+		},
 	)
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "DDD", err
+	}
+
+	return tokenString, nil
 
 }

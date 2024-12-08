@@ -15,9 +15,9 @@ func HashPassword(pwd string) (string, error) {
 }
 
 
-func ComparePassword(hashedpwd, pwd []byte) bool {
+func ComparePassword(hashedpwd string, pwd []byte) bool {
 
-	err := bcrypt.CompareHashAndPassword(hashedpwd, pwd)
+	err := bcrypt.CompareHashAndPassword([]byte(hashedpwd), pwd)
 
 	return err == nil
 

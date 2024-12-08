@@ -18,8 +18,8 @@ func NewStore(db *sql.DB) *Store {
 
 func (s *Store) GetUserByEmail(email string) (*types.User, error) {
     var user types.User
-    err := s.db.QueryRow("SELECT firstname, lastname, email  FROM users WHERE email = $1", email).
-        Scan(&user.FirstName, &user.LastName, &user.Email)
+    err := s.db.QueryRow("SELECT firstname, lastname, email, password  FROM users WHERE email = $1", email).
+        Scan(&user.FirstName, &user.LastName, &user.Email, &user.Password)
     
     if err != nil {
         if err == sql.ErrNoRows {
