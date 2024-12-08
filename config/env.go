@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -27,6 +28,7 @@ func initiateConfig() Config{
 		DBPassword: getEnv("DB_PASSWORD", "secret"),
 		DBAdrress: fmt.Sprintf("%s:%s", getEnv("DB_HOST", "127.0.0.1"), getEnv("DB_PORT", "5432") ),
 		DBName: getEnv("DB_NAME", "demogo"),
+		JWTDuration: getEnvInt("JWTDuration", 3600*24*7),
 	
 	}
 }
@@ -40,7 +42,21 @@ func getEnv(key, fallback string) string  {
 
 	return fallback
 
-	
+}
+
+func getEnvInt(key string, fallback int64) int64 {
+	 
+	if value, ok := os.LookupEnv(key); ok {
+		i, err := strconv.ParseInt(s string, base int, bitSize int)
+			return fallback
+		}
+
+		return i
+	}
+
+	return fallback
+
+
 }
 
 

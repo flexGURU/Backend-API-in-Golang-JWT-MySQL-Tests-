@@ -29,7 +29,36 @@ func (h *Handler) RegisterRoute(router *mux.Router) {
 
 }
 
-func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {}
+func (h *Handler) handleLogin(w http.ResponseWriter, r *http.Request)  {
+        // Parse JSON payload
+        var userloginPayload types.LoginUserPayload
+        if err := utils.ParseJSON(r, &userloginPayload); err != nil {
+            utils.WriteError(w, http.StatusBadRequest, err)
+            return
+        }
+    
+        // Validate the payload
+        if err := utils.Validate.Struct(userloginPayload); err != nil {
+            errors := err.(validator.ValidationErrors)
+            utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("invalid payload &%s", errors))
+            return
+        }
+
+        user, err := h.store.GetUserByEmail(userloginPayload.Email)
+        if err != nil {
+            utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("user not found" ))
+
+            return
+        }
+
+        if !auth.ComparePassword([]byte(user.Password), []byte(userloginPayload.Password)) {
+            utils.WriteError(w, http.StatusBadGateway, fmt.Errorf("email or password in incorrect"))
+            return
+        }
+
+        utils.WriteJSON(w,http.StatusOK, map[string]string{ "token" : "" } )
+
+}
 
 
 func (h *Handler) handleregister(w http.ResponseWriter, r *http.Request) {
