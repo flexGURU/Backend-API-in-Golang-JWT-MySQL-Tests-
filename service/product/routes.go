@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/flexGURU/goAPI/types"
+	"github.com/flexGURU/goAPI/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -25,6 +26,11 @@ func (h *Handler) RegisterRoute(router *mux.Router) {
 }
 
 func (h *Handler) productHandler(w http.ResponseWriter, r *http.Request) {
-	h.Store.GetProducts()
-	
+	prods, err := h.Store.GetProducts()
+	if err != nil {
+		utils.WriteError(w, http.StatusBadGateway, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusOK, prods )
 }

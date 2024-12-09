@@ -34,6 +34,8 @@ func (server *APIServer) Run() error {
 	userHandler.RegisterRoute(subrouter)
 
 	productStore := product.NewStore(server.db)
+	productHandler := product.NewHandler(productStore)
+	productHandler.RegisterRoute(subrouter)
 
 	return http.ListenAndServe(server.addr, router)
 

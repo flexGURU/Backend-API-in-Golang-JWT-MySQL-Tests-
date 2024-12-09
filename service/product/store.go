@@ -2,6 +2,7 @@ package product
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/flexGURU/goAPI/types"
 )
@@ -19,7 +20,7 @@ func (s *Store) GetProducts() ([]types.Product, error)  {
 
 	rows, err := s.db.Query("SELECT * FROM products")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reteriveing data", err)
 	}
 
 	products := make([]types.Product, 0)
@@ -42,10 +43,19 @@ func (s *Store) GetProducts() ([]types.Product, error)  {
 func ScanRows(rows *sql.Rows) (*types.Product, error) {
 	products := new(types.Product)
 
-	err := rows.Scan(&products)
+	err := rows.Scan(
+		&products.ID,
+		&products.Name,
+		&products.Description,
+		&products.Image,
+		&products.Price,
+		&products.Quantity,
+		&products.CreatedAt,
+
+	)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reteriveing data", err)
 	}
 
 	return products, nil
