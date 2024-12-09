@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/flexGURU/goAPI/service/user"
+	"github.com/flexGURU/goAPI/service/product"
 	"github.com/gorilla/mux"
 )
 
@@ -32,6 +33,9 @@ func (server *APIServer) Run() error {
 	userHandler := user.NewHandler(userStore)
 	userHandler.RegisterRoute(subrouter)
 
+	productStore := product.NewStore(server.db)
+
 	return http.ListenAndServe(server.addr, router)
 
 }
+

@@ -32,3 +32,16 @@ type UserStore interface {
 	CreateUser(user User) (error)
 
 }
+type Product struct {
+	ID int  `json:"id"`
+	Name string `json:"name"`
+	Description string `json:"description"`
+	Image string `json:"image"`
+	Price float64 `json:"price"`
+	Quantity int `json:"quantity"`
+	CreatedAt time.Time `json:"createdat"`
+}
+
+type ProductStore interface {
+	GetProducts() ([]Product, error)
+}

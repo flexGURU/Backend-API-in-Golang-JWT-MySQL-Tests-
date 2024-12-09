@@ -6,7 +6,7 @@ postgres:
 	docker run --name my_postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:12-alpine
 
 test:
-	go test -v ./service/user
+	go test -v ./auth
 
 createdb:
 	docker exec -it my_postgres createdb --username=root demogo
