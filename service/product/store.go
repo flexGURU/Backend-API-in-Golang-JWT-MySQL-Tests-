@@ -3,6 +3,7 @@ package product
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/flexGURU/goAPI/types"
 )
@@ -36,6 +37,11 @@ func (s *Store) GetProducts() ([]types.Product, error)  {
 	}
 
 	return products, nil
+	
+}
+
+func (s *Store) GetProductsByIDs(PIDs []int) ([]types.Product, error)  {
+	return nil, nil
 	
 }
 

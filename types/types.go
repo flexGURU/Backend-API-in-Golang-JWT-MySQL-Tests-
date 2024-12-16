@@ -7,6 +7,7 @@ import (
 
 type ProductStore interface {
 	GetProducts() ([]Product, error)
+	GetProductsByIDs(PIDs []int)([]Product, error)
 }
 
 type OrderStore interface {
@@ -14,7 +15,11 @@ type OrderStore interface {
 	CreateOrderItem(OrderItem) (error)
 }
 
+type UserStore interface {
+	GetUserByEmail(email string) (*User, error)
+	CreateUser(user User) (error)
 
+}
 type User struct {
 	ID        int `json:"id"`
 	FirstName string `json:"firstname"`
@@ -37,11 +42,7 @@ type LoginUserPayload struct {
 	Password  string `json:"password" validate:"required,min=3,max=10"`
 }
 
-type UserStore interface {
-	GetUserByEmail(email string) (*User, error)
-	CreateUser(user User) (error)
 
-}
 type Product struct {
 	ID int  `json:"id"`
 	Name string `json:"name"`
@@ -70,4 +71,12 @@ type OrderItem struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+type CartItem struct {
+	ProductID int `json:"productID"`
+	Quantity int `json:"quantity"`
+}
+
+type CartCheckoutPayload struct {
+	items []CartItem `json:"cartitem" validate:"required"`
+}
 
