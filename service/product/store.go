@@ -40,8 +40,35 @@ func (s *Store) GetProducts() ([]types.Product, error)  {
 	
 }
 
-func (s *Store) GetProductsByIDs(PIDs []int) ([]types.Product, error)  {
-	return nil, nil
+func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error)  {
+	placeholders := make([]string, len(productIDs))
+
+	
+	args := make([]interface{}, len(productIDs))
+
+	for i, value := range productIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = value
+	}
+
+	query := fmt.Sprintf("SELECT * FROM products WHERE id IN (%S)", strings.Join(placeholders, ","))
+
+	rows, err := s.db.Query(query, args )
+	if err != nil {
+		return nil, err
+	}
+
+	products := []types.Product{}
+	for rows.Next(){
+		p, err := ScanRows(rows)
+		if err != nil {
+			return nil, err
+		}
+
+		products = append(products, *p)
+	}
+
+	return products, nil
 	
 }
 

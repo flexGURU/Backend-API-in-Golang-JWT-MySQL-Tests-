@@ -39,5 +39,8 @@ func (h *Handler) handleCheckout(w http.ResponseWriter, r *http.Request) {
 	}
 
 
+	
+
+
 
 }
