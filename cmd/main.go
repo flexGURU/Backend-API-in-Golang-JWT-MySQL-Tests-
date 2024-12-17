@@ -10,20 +10,15 @@ import (
 
 func main() {
 
-	
-
 	db, err := db.NewPostgre(&config.Envs)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	server := api.NewAPIServer(":8080",db  )
 
 	if err := server.Run(); err != nil {
 		log.Fatal("problem",err)
 	}
-
-
 
 }

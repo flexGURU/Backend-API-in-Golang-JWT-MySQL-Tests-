@@ -79,4 +79,3 @@ type CartItem struct {
 type CartCheckoutPayload struct {
 	Items []CartItem `json:"cartitem" validate:"required"`
 }
-
