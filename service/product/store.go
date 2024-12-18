@@ -12,12 +12,17 @@ type Store struct {
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store  {
-	return &Store{db: db}
-	
+// UpdateProduct implements types.ProductStore.
+func (s *Store) UpdateProduct(types.Product) error {
+	panic("unimplemented")
 }
 
-func (s *Store) GetProducts() ([]types.Product, error)  {
+func NewStore(db *sql.DB) *Store {
+	return &Store{db: db}
+
+}
+
+func (s *Store) GetProducts() ([]types.Product, error) {
 
 	rows, err := s.db.Query("SELECT * FROM products")
 	if err != nil {
@@ -31,19 +36,18 @@ func (s *Store) GetProducts() ([]types.Product, error)  {
 		if err != nil {
 			return nil, err
 		}
-		
+
 		products = append(products, *p)
 
 	}
 
 	return products, nil
-	
+
 }
 
-func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error)  {
+func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error) {
 	placeholders := make([]string, len(productIDs))
 
-	
 	args := make([]interface{}, len(productIDs))
 
 	for i, value := range productIDs {
@@ -53,13 +57,13 @@ func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error)  {
 
 	query := fmt.Sprintf("SELECT * FROM products WHERE id IN (%S)", strings.Join(placeholders, ","))
 
-	rows, err := s.db.Query(query, args )
+	rows, err := s.db.Query(query, args)
 	if err != nil {
 		return nil, err
 	}
 
 	products := []types.Product{}
-	for rows.Next(){
+	for rows.Next() {
 		p, err := ScanRows(rows)
 		if err != nil {
 			return nil, err
@@ -69,9 +73,8 @@ func (s *Store) GetProductsByIDs(productIDs []int) ([]types.Product, error)  {
 	}
 
 	return products, nil
-	
-}
 
+}
 
 func ScanRows(rows *sql.Rows) (*types.Product, error) {
 	products := new(types.Product)
@@ -84,7 +87,6 @@ func ScanRows(rows *sql.Rows) (*types.Product, error) {
 		&products.Price,
 		&products.Quantity,
 		&products.CreatedAt,
-
 	)
 
 	if err != nil {

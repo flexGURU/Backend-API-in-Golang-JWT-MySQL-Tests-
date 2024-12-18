@@ -34,3 +34,15 @@ func (s *Store) CreateOrderItem(orderItem types.OrderItem) error  {
 	return err
 	
 }
+
+func (s *Store) UpdateProduct(product types.Product) error {
+
+	query := "UPDATE products SET name = $1, price = $2, image = $3, description = $4, quantity = $5 WHERE id = $5"
+
+	_, err := s.db.Exec(query, product.Name, product.Price, product.Image, product.Description, product.Quantity, product.ID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

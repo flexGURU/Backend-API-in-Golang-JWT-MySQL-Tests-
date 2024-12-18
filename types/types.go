@@ -8,6 +8,7 @@ import (
 type ProductStore interface {
 	GetProducts() ([]Product, error)
 	GetProductsByIDs(PIDs []int)([]Product, error)
+	UpdateProduct(Product) error
 }
 
 type OrderStore interface {

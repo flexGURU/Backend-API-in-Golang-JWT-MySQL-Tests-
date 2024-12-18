@@ -3,7 +3,6 @@ package carts
 import (
 	"fmt"
 
-	"github.com/flexGURU/goAPI/service/product"
 	"github.com/flexGURU/goAPI/types"
 )
 
@@ -25,7 +24,7 @@ func getCartItemIds(items []types.CartItem) ([]int, error) {
 }
 
 
-func (h *Handler) createOrder (products []types.Product, items []types.CartItem, user types.User ) (int, float64, error) {
+func (h *Handler) createOrder (products []types.Product, items []types.CartItem, userID int ) (int, float64, error) {
 	// create a product Map
 
 	productMap := make(map[int]types.Product)
@@ -34,21 +33,49 @@ func (h *Handler) createOrder (products []types.Product, items []types.CartItem,
 	}
 
 	// check if all products are actually in stock
-
 	if err := checkIfCartIsInStock(items, productMap); err != nil {
 		return 0, 0, err
 
 	}
 	 
 	// calculate the total price
+	totalPrice := calculateTotalPrice(items, productMap)
 
-	totalPrice := calculateTotalPrice()
+
 	// reduce quantity of products in the db
+	for _, item := range items {
+		product := productMap[item.ProductID]
+		product.Quantity -= item.Quantity
+
+		h.productStore.UpdateProduct(product)
+
+	}
+
+
 	// create the order
+	orderID, err := h.store.CreateOrder(types.Order{
+		UserID: userID,
+		Total: totalPrice,
+		Status: "pending",
+		Address: "some addy",
+		
+	})
+	if err != nil {
+		return 0, 0, err
+	}
+
 	// create the order items
+	for _, items := range items {
+		h.store.CreateOrderItem(types.OrderItem{
+			OrderID: orderID,
+			ProductID: items.ProductID,
+			Quantity: items.Quantity,
+			Price: productMap[items.ProductID].Price,
+		})
+	}
 
 
-
+	return orderID, totalPrice, nil
 
 }
 
@@ -73,4 +100,15 @@ func checkIfCartIsInStock(cartItems []types.CartItem, products map[int]types.Pro
 
 
 	
+}
+
+func calculateTotalPrice(cartItems []types.CartItem, products map[int]types.Product) float64  {
+	var totalPrice float64
+
+	for _, item := range cartItems {
+		product := products[item.ProductID]
+		totalPrice += product.Price * float64(item.Quantity)
+	}
+
+	return totalPrice
 }
