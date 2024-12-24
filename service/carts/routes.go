@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/flexGURU/goAPI/auth"
 	"github.com/flexGURU/goAPI/types"
 	"github.com/flexGURU/goAPI/utils"
 	"github.com/gorilla/mux"
@@ -12,6 +13,7 @@ import (
 type Handler struct {
 	store types.OrderStore
 	productStore types.ProductStore
+	userStore types.UserStore
 
 }
 
@@ -22,7 +24,7 @@ func NewHandler(store types.OrderStore, productStore types.ProductStore) *Handle
 }
 
 func (h *Handler) RegisterRoute(router *mux.Router) {
-	router.HandleFunc("/cart/checkout", h.handleCheckout)
+	router.HandleFunc("/cart/checkout", auth.WithJWTAuth(h.handleCheckout, h.userStore))
 	
 }
 

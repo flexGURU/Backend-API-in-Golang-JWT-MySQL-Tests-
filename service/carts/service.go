@@ -41,7 +41,6 @@ func (h *Handler) createOrder (products []types.Product, items []types.CartItem,
 	// calculate the total price
 	totalPrice := calculateTotalPrice(items, productMap)
 
-
 	// reduce quantity of products in the db
 	for _, item := range items {
 		product := productMap[item.ProductID]
@@ -50,7 +49,6 @@ func (h *Handler) createOrder (products []types.Product, items []types.CartItem,
 		h.productStore.UpdateProduct(product)
 
 	}
-
 
 	// create the order
 	orderID, err := h.store.CreateOrder(types.Order{
